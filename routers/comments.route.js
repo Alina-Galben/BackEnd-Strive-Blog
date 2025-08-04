@@ -4,7 +4,7 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // GET all comments for a post
 router.get('/blogPosts/:id', async (req, res) => {
@@ -28,7 +28,7 @@ router.get('/blogPosts/:id/:commentId', async (req, res) => {
 });
 
 // POST new comment
-router.post('/blogPosts/:id', async (req, res) => {
+router.post('/blogPosts/:id', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
     post.comments.push(req.body); // req.body = { userName, text }
@@ -40,7 +40,7 @@ router.post('/blogPosts/:id', async (req, res) => {
 });
 
 // PUT update comment
-router.put('/blogPosts/:id/:commentId', async (req, res) => {
+router.put('/blogPosts/:id/:commentId', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
     const comment = post.comments.id(req.params.commentId);
@@ -53,7 +53,7 @@ router.put('/blogPosts/:id/:commentId', async (req, res) => {
 });
 
 // DELETE a comment
-router.delete('/blogPosts/:id/:commentId', async (req, res) => {
+router.delete('/blogPosts/:id/:commentId', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
     post.comments.id(req.params.commentId).remove();

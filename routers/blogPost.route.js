@@ -5,7 +5,7 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router()
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
     try {
@@ -75,7 +75,7 @@ router.post('/', async (req, res) => {
 */
 
 // Post Creazione blogPost con file copertina - cover con upload
-router.post('/', uploadCover.single('cover'), async (req, res) => {
+router.post('/', authMiddleware, uploadCover.single('cover'), async (req, res) => {
     try {
       console.log("📝 Creazione blogPost - BODY:", req.body);
       console.log("🖼️ File copertina ricevuto:", req.file);
@@ -123,7 +123,7 @@ router.post('/', uploadCover.single('cover'), async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
     const id = req.params.id;
     const obj = req.body;
     try {
@@ -134,7 +134,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
     const id = req.params.id;
     try {
         await blogPostModel.findByIdAndDelete(id);
