@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
 
         // 4) Tempo di lettura minore di un certo valore
         if (req.query.maxReadTime) {
-            conditions.push({ readTime: { $gte: parseInt(req.query.dataMassima) } });
+            conditions.push({ readTime: { $lte: parseInt(req.query.dataMassima) } });
         }
 
         // 5) Costruisco il filtro finale
