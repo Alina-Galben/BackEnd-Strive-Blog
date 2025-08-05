@@ -10,6 +10,9 @@ const router = express.Router();
 router.get('/blogPosts/:id', async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
     res.status(200).json(post.comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -20,7 +23,13 @@ router.get('/blogPosts/:id', async (req, res) => {
 router.get('/blogPosts/:id/:commentId', async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
     const comment = post.comments.id(req.params.commentId);
+    if (!comment) {
+      return res.status(400).json({ error: 'Commento non trovato'});
+    }
     res.status(200).json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -31,6 +40,9 @@ router.get('/blogPosts/:id/:commentId', async (req, res) => {
 router.post('/blogPosts/:id', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
     post.comments.push(req.body); // req.body = { userName, text }
     await post.save();
     res.status(201).json(post.comments);
@@ -43,7 +55,13 @@ router.post('/blogPosts/:id', authMiddleware, async (req, res) => {
 router.put('/blogPosts/:id/:commentId', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
     const comment = post.comments.id(req.params.commentId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
     comment.set(req.body); // aggiornamento con { nome e text }
     await post.save();
     res.status(200).json(comment);
@@ -56,9 +74,18 @@ router.put('/blogPosts/:id/:commentId', authMiddleware, async (req, res) => {
 router.delete('/blogPosts/:id/:commentId', authMiddleware, async (req, res) => {
   try {
     const post = await blogPostModel.findById(req.params.id);
-    post.comments.id(req.params.commentId).remove();
+    if (!post) {
+      return res.status(404).json({ error: 'Post non trovato' });
+    }
+
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({ error: 'Commento non trovato' });
+    }
+
+    comment.remove();
     await post.save();
-    res.status(200).json({ message: "Comment deleted" });
+    res.status(200).json({ message: 'Comment deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
