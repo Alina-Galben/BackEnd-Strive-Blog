@@ -87,7 +87,14 @@ router.post('/', authMiddleware, uploadCover.single('cover'), async (req, res) =
         return res.status(400).json({ error: "⚠️ Campi obbligatori mancanti (category, title, readTime, author, content)." });
       }
   
-      const parsedReadTime = JSON.parse(readTime); // perché Postman potrebbe inviarlo come stringa
+      // perché Postman potrebbe inviarlo come stringa
+      let parsedReadTime;
+      try {
+        parsedReadTime = JSON.parse(readTime);
+      } catch (err) {
+        return res.status(400).json({ error: "readTime non è in formato JSON valido." });
+      }
+
   
       // 2. Gestione copertina
       let cover;
